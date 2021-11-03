@@ -39,19 +39,57 @@ def check_bounds_bbs(partial_path: list, game_map: list, goal: list):
 
 
 def a_star_heuristics(candidate: list, game_map: list, goal: list):
-    if candidate == goal: return 0
-    edge1, edge2 = abs(candidate[0] - goal[0]), abs(candidate[1] - goal[1])
+    if candidate == goal:
+        return 0
+    edge1, edge2 = abs(candidate[0] - goal[0]) + 1, abs(candidate[1] - goal[1]) + 1
+
+    manhattan_distance = int(edge1) + int(edge2)
+    num_of_tiles = int(edge1) * int(edge2)
+
     approx_path_length = math.sqrt(edge1 ** 2 + edge2 ** 2)
     approx_area_cost = 0
-    approx_path_cost = 0
 
-    for i in range(candidate[0], goal[0]):
-        for j in range(candidate[1], goal[1]):
-            approx_area_cost += game_map[i][j].cost()
+    if candidate[0] < goal[0]:
+        if candidate[1] < goal[1]:
+            for i in range(candidate[0], goal[0] + 1):
+                for j in range(candidate[1], goal[1] + 1):
+                    approx_area_cost += game_map[i][j].cost()
+        elif candidate[1] == goal[1]:
+            for i in range(candidate[0], goal[0] + 1):
+                approx_area_cost += game_map[i][candidate[1]].cost()
+        elif candidate[1] > goal[1]:
+            for i in range(candidate[0], goal[0] + 1):
+                for j in range(goal[1], candidate[1] + 1):
+                    approx_area_cost += game_map[i][j].cost()
+    elif candidate[0] == goal[0]:
+        if candidate[1] < goal[1]:
+            for j in range(candidate[1], goal[1] + 1):
+                approx_area_cost += game_map[candidate[0]][j].cost()
+        elif candidate[1] == goal[1]:
+            return 0
+        elif candidate[1] > goal[1]:
+            for j in range(goal[1], candidate[1] + 1):
+                approx_area_cost += game_map[candidate[0]][j].cost()
+    elif candidate[0] > goal[0]:
+        if candidate[1] < goal[1]:
+            for i in range(goal[0], candidate[0] + 1):
+                for j in range(candidate[1], goal[1] + 1):
+                    approx_area_cost += game_map[i][j].cost()
+        elif candidate[1] == goal[1]:
+            for i in range(goal[0], candidate[0] + 1):
+                approx_area_cost += game_map[i][candidate[1]].cost()
+        elif candidate[1] > goal[1]:
+            for i in range(goal[0], candidate[0] + 1):
+                for j in range(goal[1], candidate[1] + 1):
+                    approx_area_cost += game_map[i][j].cost()
 
-    approx_path_cost = approx_area_cost / 2 / approx_path_length
+    # approx_path_cost = approx_area_cost / 2 / approx_path_length / num_of_tiles
+    approx_path_cost = math.floor(approx_area_cost / (2 * num_of_tiles)) * (
+                math.floor(approx_path_length) / manhattan_distance)
 
+    # if candidate == [4, 0]: print(str(candidate) + " " + str(approx_path_cost) + " " + str(approx_area_cost)+ " " + str(approx_path_length))
     return approx_path_cost
+
 
 def check_bounds_a_star(partial_path: list, game_map: list, goal: list):
     curr_path: list = list(partial_path[0])
@@ -64,10 +102,12 @@ def check_bounds_a_star(partial_path: list, game_map: list, goal: list):
     options = [elem for elem in possible_options if elem not in curr_path]
     new_paths = []
     if goal in options:
-        new_paths.append([curr_path + [goal], cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(goal, game_map, goal)])
+        new_paths.append(
+            [curr_path + [goal], cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(goal, game_map, goal)])
         return new_paths, True
     for opt in options:
-        new_paths.append([curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost() + a_star_heuristics(opt, game_map, goal)])
+        new_paths.append(
+            [curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost() + a_star_heuristics(opt, game_map, goal)])
     return new_paths, False
 
 
