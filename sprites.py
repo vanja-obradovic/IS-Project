@@ -17,6 +17,26 @@ def check_bounds(row, col, game_map: list):
     return options
 
 
+# [[ [[coor]], cost ]]
+
+def check_bounds_bbs(partial_path: list, game_map: list, goal: list):
+    curr_path: list = list(partial_path[0])
+    cost = partial_path[1]
+
+    node = curr_path[len(curr_path)-1]
+    row, col = node[0], node[1]
+    possible_options = check_bounds(row, col, game_map)
+
+    options = [elem for elem in possible_options if elem not in curr_path]
+    new_paths = []
+    if goal in options:
+        new_paths.append([curr_path + [goal], cost + game_map[goal[0]][goal[1]].cost()])
+        return new_paths, True
+    for opt in options:
+            new_paths.append([curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost()])
+    return new_paths, False
+
+
 def compute_possible_jump(row, col, game_map: list, path: list):
     options = check_bounds(row, col, game_map)
     tmp = [elem for elem in options if game_map[elem[0]][elem[1]] not in path]
@@ -39,7 +59,7 @@ def compute_traversal_score(target: list, game_map: list, position: list) -> int
     return result / len(options)
 
 
-def check_traversal(row, col, game_map: list, path: list) -> list:
+def check_traversal(row, col, game_map: list) -> list:
     options = []
     if row - 1 >= 0:
         options.append([row - 1, col])
@@ -51,9 +71,6 @@ def check_traversal(row, col, game_map: list, path: list) -> list:
         options.append([row, col - 1])
 
     options.sort(key=lambda elem: compute_traversal_score(elem, game_map, [row, col]))
-    # print(options)
-    # for el in options:
-    #     print(compute_traversal_score(el, game_map, [row, col]))
     return options
 
 
@@ -165,7 +182,7 @@ class Jocke(Agent):
         # print(check_traversal(row, col, game_map, path))
         curr_pop_list = []
         while True:
-            options = check_traversal(row, col, game_map, path)
+            options = check_traversal(row, col, game_map)
             bfs_graph[(row, col)] = options
             if len(bfs_graph) == 1:
                 iterator = next(iter(bfs_graph))
@@ -213,18 +230,22 @@ class Draza(Agent):
         super().__init__(row, col, file_name)
 
     def get_agent_path(self, game_map, goal):
-        path = [game_map[self.row][self.col]]
-
         row = self.row
         col = self.col
+        path = []
+        bbs_list = [[[[row, col]], 0]]
+
         while True:
-            if row != goal[0]:
-                row = row + 1 if row < goal[0] else row - 1
-            elif col != goal[1]:
-                col = col + 1 if col < goal[1] else col - 1
+            partial_path = bbs_list.pop(0)
+            new_paths, end = check_bounds_bbs(partial_path, game_map, list(goal))
+            if not end:
+                bbs_list.extend(new_paths)
+                bbs_list.sort(key=lambda elem: (elem[1], len(elem[0])))
             else:
+                for elem in new_paths[0][0]:
+                    path.append(game_map[elem[0]][elem[1]])
                 break
-            path.append(game_map[row][col])
+
         return path
 
 
