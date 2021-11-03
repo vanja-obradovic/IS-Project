@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="183b0d63-deed-429e-a62e-b2344ff7ef64" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/maps/map3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/map3.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maps/map4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/map4.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" afterPath="$PROJECT_DIR$/sprites.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +75,8 @@
       <workItem from="1635838906408" duration="29280000" />
       <workItem from="1635926760906" duration="8582000" />
       <workItem from="1635935795673" duration="107000" />
-      <workItem from="1635954516068" duration="5741000" />
+      <workItem from="1635954516068" duration="5822000" />
+      <workItem from="1635964038065" duration="2811000" />
     </task>
     <servers />
   </component>
@@ -87,7 +88,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/sprites.py</url>
-          <line>214</line>
+          <line>248</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>

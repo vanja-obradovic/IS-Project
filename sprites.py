@@ -2,6 +2,7 @@ import pygame
 import os
 import config
 import pprint
+import math
 
 
 def check_bounds(row, col, game_map: list):
@@ -23,7 +24,7 @@ def check_bounds_bbs(partial_path: list, game_map: list, goal: list):
     curr_path: list = list(partial_path[0])
     cost = partial_path[1]
 
-    node = curr_path[len(curr_path)-1]
+    node = curr_path[len(curr_path) - 1]
     row, col = node[0], node[1]
     possible_options = check_bounds(row, col, game_map)
 
@@ -33,7 +34,40 @@ def check_bounds_bbs(partial_path: list, game_map: list, goal: list):
         new_paths.append([curr_path + [goal], cost + game_map[goal[0]][goal[1]].cost()])
         return new_paths, True
     for opt in options:
-            new_paths.append([curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost()])
+        new_paths.append([curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost()])
+    return new_paths, False
+
+
+def a_star_heuristics(candidate: list, game_map: list, goal: list):
+    if candidate == goal: return 0
+    edge1, edge2 = abs(candidate[0] - goal[0]), abs(candidate[1] - goal[1])
+    approx_path_length = math.sqrt(edge1 ** 2 + edge2 ** 2)
+    approx_area_cost = 0
+    approx_path_cost = 0
+
+    for i in range(candidate[0], goal[0]):
+        for j in range(candidate[1], goal[1]):
+            approx_area_cost += game_map[i][j].cost()
+
+    approx_path_cost = approx_area_cost / 2 / approx_path_length
+
+    return approx_path_cost
+
+def check_bounds_a_star(partial_path: list, game_map: list, goal: list):
+    curr_path: list = list(partial_path[0])
+    cost = partial_path[1]
+
+    node = curr_path[len(curr_path) - 1]
+    row, col = node[0], node[1]
+    possible_options = check_bounds(row, col, game_map)
+
+    options = [elem for elem in possible_options if elem not in curr_path]
+    new_paths = []
+    if goal in options:
+        new_paths.append([curr_path + [goal], cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(goal, game_map, goal)])
+        return new_paths, True
+    for opt in options:
+        new_paths.append([curr_path + [opt], cost + game_map[opt[0]][opt[1]].cost() + a_star_heuristics(opt, game_map, goal)])
     return new_paths, False
 
 
@@ -254,18 +288,22 @@ class Bole(Agent):
         super().__init__(row, col, file_name)
 
     def get_agent_path(self, game_map, goal):
-        path = [game_map[self.row][self.col]]
-
         row = self.row
         col = self.col
+        path = []
+        a_star_list = [[[[row, col]], 0]]
+
         while True:
-            if row != goal[0]:
-                row = row + 1 if row < goal[0] else row - 1
-            elif col != goal[1]:
-                col = col + 1 if col < goal[1] else col - 1
+            partial_path = a_star_list.pop(0)
+            new_paths, end = check_bounds_a_star(partial_path, game_map, list(goal))
+            if not end:
+                a_star_list.extend(new_paths)
+                a_star_list.sort(key=lambda elem: (elem[1], len(elem[0])))
             else:
+                for elem in new_paths[0][0]:
+                    path.append(game_map[elem[0]][elem[1]])
                 break
-            path.append(game_map[row][col])
+
         return path
 
 
