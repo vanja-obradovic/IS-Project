@@ -43,10 +43,10 @@ def a_star_heuristics(candidate: list, game_map: list, goal: list):
         return 0
     edge1, edge2 = abs(candidate[0] - goal[0]) + 1, abs(candidate[1] - goal[1]) + 1
 
-    manhattan_distance = int(edge1) + int(edge2)
+    # manhattan_distance = int(edge1) + int(edge2) - 2
     num_of_tiles = int(edge1) * int(edge2)
 
-    approx_path_length = math.sqrt(edge1 ** 2 + edge2 ** 2)
+    # approx_path_length = math.sqrt((edge1 - 1) ** 2 + (edge2 - 1) ** 2)
     approx_area_cost = 0
 
     if candidate[0] < goal[0]:
@@ -84,10 +84,17 @@ def a_star_heuristics(candidate: list, game_map: list, goal: list):
                     approx_area_cost += game_map[i][j].cost()
 
     # approx_path_cost = approx_area_cost / 2 / approx_path_length / num_of_tiles
-    approx_path_cost = math.floor(approx_area_cost / (2 * num_of_tiles)) * (
-                math.floor(approx_path_length) / manhattan_distance)
+    # approx_path_cost = math.floor(approx_area_cost / (2 * num_of_tiles)) * (
+    #         math.floor(approx_path_length) / manhattan_distance)
 
-    # if candidate == [4, 0]: print(str(candidate) + " " + str(approx_path_cost) + " " + str(approx_area_cost)+ " " + str(approx_path_length))
+    alpha = math.log10(num_of_tiles/2)/2 if num_of_tiles < 50 else 1
+    approx_area_cost = math.floor(approx_area_cost / (2 * num_of_tiles) * alpha)
+
+    approx_path_cost = approx_area_cost
+
+    # if candidate == [4, 0] or candidate == [5, 1] or candidate == [3, 7]:
+    #     print(
+    #         str(candidate) + " " + str(approx_path_cost) + " " + str(approx_area_cost) + " " + str(approx_path_length))
     return approx_path_cost
 
 
