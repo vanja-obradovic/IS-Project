@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="183b0d63-deed-429e-a62e-b2344ff7ef64" name="Changes" comment="" />
+    <list default="true" id="183b0d63-deed-429e-a62e-b2344ff7ef64" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maps/homework_destroyer.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/homework_destroyer.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maps/map4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/map4.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" afterPath="$PROJECT_DIR$/sprites.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +51,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="maps/homework_destroyer.txt Draza" />
+      <option name="PARAMETERS" value="maps/homework_destroyer.txt Bole" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -80,6 +85,7 @@
       <workItem from="1636122053609" duration="11000" />
       <workItem from="1636122079910" duration="8000" />
       <workItem from="1636235415891" duration="7660000" />
+      <workItem from="1636369205563" duration="14749000" />
     </task>
     <servers />
   </component>
@@ -91,17 +97,17 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/sprites.py</url>
-          <line>322</line>
+          <line>347</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/sprites.py</url>
-          <line>381</line>
+          <line>409</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/sprites.py</url>
-          <line>357</line>
+          <line>383</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
       </breakpoints>
@@ -114,6 +120,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/materials$main.coverage" NAME="main Coverage Results" MODIFIED="1635934172498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/IS_Project_1$main.coverage" NAME="main Coverage Results" MODIFIED="1636242446299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/IS_Project_1$main.coverage" NAME="main Coverage Results" MODIFIED="1636396782053" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
