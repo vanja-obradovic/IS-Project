@@ -1,7 +1,6 @@
 import pygame
 import os
 import config
-import pprint
 import time
 
 
@@ -18,27 +17,15 @@ def check_bounds(row, col, game_map: list):
     return options
 
 
-def check_costs(row, col, origin: list, game_map):
-    min = 999999
-    if col - 1 >= 0 and origin != [row, col - 1]:
-        cost = game_map[row][col - 1].cost()
-        if cost < min: min = cost
-    if row + 1 < len(game_map) and origin != [row + 1, col]:
-        cost = game_map[row + 1][col].cost()
-        if cost < min: min = cost
-    if col + 1 < len(game_map[row]) and origin != [row, col + 1]:
-        cost = game_map[row][col + 1].cost()
-        if cost < min: min = cost
-    if row - 1 >= 0 and origin != [row - 1, col]:
-        cost = game_map[row - 1][col].cost()
-        if cost < min: min = cost
+def check_costs(game_map):
+    row_length = len(game_map)
+    col_length = len(game_map[0])
+    min = 9999999
+    for i in range(row_length):
+        for j in range(col_length):
+            cost = game_map[i][j].cost()
+            if min > cost: min = cost
     return min
-
-    # options = check_bounds(row, col, game_map)
-    # option = [elem for elem in options if elem != origin]
-    # option.sort(key=lambda elem: game_map[elem[0]][elem[1]].cost())
-    # return game_map[option[0][0]][option[0][1]].cost()
-
 
 # [[ [[coor]], cost ]]
 
@@ -84,69 +71,18 @@ def list_refresh(current: list, update: list):
     return current
 
 
-def a_star_heuristics(candidate: list, game_map: list, goal: list, origin: list):
+def a_star_heuristics(candidate: list, goal: list, min_tile):
     if candidate == goal:
         return 0
     edge1, edge2 = abs(candidate[0] - goal[0]) + 1, abs(candidate[1] - goal[1]) + 1
 
     manhattan_distance = int(edge1) + int(edge2) - 2
-    # num_of_tiles = int(edge1) * int(edge2)
-    #
-    # approx_path_length = math.sqrt((edge1 - 1) ** 2 + (edge2 - 1) ** 2)
-    # approx_area_cost = 0
-    #
-    # if candidate[0] < goal[0]:
-    #     if candidate[1] < goal[1]:
-    #         for i in range(candidate[0], goal[0] + 1):
-    #             for j in range(candidate[1], goal[1] + 1):
-    #                 approx_area_cost += game_map[i][j].cost()
-    #     elif candidate[1] == goal[1]:
-    #         for i in range(candidate[0], goal[0] + 1):
-    #             approx_area_cost += game_map[i][candidate[1]].cost()
-    #     elif candidate[1] > goal[1]:
-    #         for i in range(candidate[0], goal[0] + 1):
-    #             for j in range(goal[1], candidate[1] + 1):
-    #                 approx_area_cost += game_map[i][j].cost()
-    # elif candidate[0] == goal[0]:
-    #     if candidate[1] < goal[1]:
-    #         for j in range(candidate[1], goal[1] + 1):
-    #             approx_area_cost += game_map[candidate[0]][j].cost()
-    #     elif candidate[1] == goal[1]:
-    #         return 0
-    #     elif candidate[1] > goal[1]:
-    #         for j in range(goal[1], candidate[1] + 1):
-    #             approx_area_cost += game_map[candidate[0]][j].cost()
-    # elif candidate[0] > goal[0]:
-    #     if candidate[1] < goal[1]:
-    #         for i in range(goal[0], candidate[0] + 1):
-    #             for j in range(candidate[1], goal[1] + 1):
-    #                 approx_area_cost += game_map[i][j].cost()
-    #     elif candidate[1] == goal[1]:
-    #         for i in range(goal[0], candidate[0] + 1):
-    #             approx_area_cost += game_map[i][candidate[1]].cost()
-    #     elif candidate[1] > goal[1]:
-    #         for i in range(goal[0], candidate[0] + 1):
-    #             for j in range(goal[1], candidate[1] + 1):
-    #                 approx_area_cost += game_map[i][j].cost()
 
-    # alpha = math.log10(num_of_tiles / 2) / 2 if num_of_tiles < 200 else 1
-    # beta = (approx_path_length / manhattan_distance)
-    # approx_area_cost = math.floor(approx_area_cost / (num_of_tiles) * alpha * (1 - beta))
-    #
-    # approx_path_cost_old = approx_area_cost + (approx_path_length * beta)
-
-    d = check_costs(candidate[0], candidate[1], origin, game_map)
-
-    approx_path_cost = manhattan_distance * d
-
-    # if candidate == [5, 1] or candidate == [4, 0] or candidate == [5, 2]:
-    #     print(
-    #         str(candidate) + " " + str(approx_path_cost) + " "+ str(approx_area_cost) + " " + str(
-    #             manhattan_distance) + " " + str(alpha) + " " + str(beta))
+    approx_path_cost = manhattan_distance * min_tile
     return approx_path_cost
 
 
-def check_bounds_a_star(partial_path: list, game_map: list, goal: list):
+def check_bounds_a_star(partial_path: list, game_map: list, goal: list, min_tile):
     curr_path: list = list(partial_path[0])
     cost, last_node = partial_path[1][0], partial_path[1][1]
 
@@ -159,14 +95,13 @@ def check_bounds_a_star(partial_path: list, game_map: list, goal: list):
     if goal in options:
         new_paths.append(
             [curr_path + [goal], [cost + game_map[goal[0]][goal[1]].cost(), goal,
-                                  cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(goal, game_map, goal,
-                                                                                               node)]])
+                                  cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(goal, goal, min_tile)]])
         return new_paths, True
     for opt in options:
+        tmp = cost + game_map[opt[0]][opt[1]].cost()
         new_paths.append(
-            [curr_path + [opt], [cost + game_map[opt[0]][opt[1]].cost(), opt,
-                                 cost + game_map[goal[0]][goal[1]].cost() + a_star_heuristics(opt, game_map, goal,
-                                                                                              node)]])
+            [curr_path + [opt], [tmp, opt,
+                                 tmp + a_star_heuristics(opt, goal, min_tile)]])
     return new_paths, False
 
 
@@ -310,9 +245,7 @@ class Jocke(Agent):
         row = self.row
         col = self.col
         start = game_map[row][col]
-        # bfs_list = []
         bfs_graph = {}
-        # print(check_traversal(row, col, game_map, path))
         curr_pop_list = []
         while True:
             options = check_traversal(row, col, game_map)
@@ -334,26 +267,18 @@ class Jocke(Agent):
                 curr_pop_list = list(bfs_graph.get(tmp))
             row, col = curr_pop_list.pop(0)
 
-            # bfs_list.extend(options)
-            # row, col = bfs_list.pop(0)
-
         keys = list(bfs_graph.keys())
         values = list(bfs_graph.values())
         values_len = len(values)
         curr = [goal[0], goal[1]]
 
-        print("Dictionary:")
-        pprint.pprint(bfs_graph.items())
-        print("Starting path calculation...\n")
         while start not in path:
             for el in range(values_len):
                 if curr in values[el]:
-                    print(values[el])
                     index = values.index(values[el])
                     values_len = el
                     break
             curr = list(keys[index])
-            print("Parent" + " " + str(curr))
             path.insert(0, game_map[curr[0]][curr[1]])
         return path
 
@@ -372,7 +297,6 @@ class Draza(Agent):
             partial_path = bbs_list.pop(0)
             new_paths, end = check_bounds_bbs(partial_path, game_map, list(goal))
             if not end:
-                # bbs_list.extend(new_paths)
                 bbs_list = list_refresh(bbs_list, new_paths)
                 bbs_list.sort(key=lambda elem: (elem[1][0], len(elem[0])))
             else:
@@ -393,11 +317,11 @@ class Bole(Agent):
         col = self.col
         path = []
         a_star_list = [[[[row, col]], [0, [row, col], 0]]]
-
+        min_tile = check_costs(game_map)
         start = time.time()
         while True:
             partial_path = a_star_list.pop(0)
-            new_paths, end = check_bounds_a_star(partial_path, game_map, list(goal))
+            new_paths, end = check_bounds_a_star(partial_path, game_map, list(goal), min_tile)
             if not end:
                 a_star_list = list_refresh(a_star_list, new_paths)
                 a_star_list.sort(key=lambda elem: (elem[1][2], len(elem[0])))
